@@ -1,0 +1,18 @@
+{
+	"frequency_cut": 19,
+	"unique_cut":0.05,
+	"entropy_iterations": 35,
+	"sample_size": 100,
+	"graph_max_cluster": 19,
+	"distance": "euclidean"
+}
+
+
+
+
+
+
+
+
+
+
