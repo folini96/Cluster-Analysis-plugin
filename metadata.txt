@@ -5,15 +5,17 @@
 [general]
 name=Cluster Analysis
 qgisMinimumVersion=3.0
-description=Perform clustering on vector layers
-version=0.1
+description=Perform attribute based clustering on vector layers
+version=1.0
 author=Andrea Folini
 email=andreafolini96@gmail.com
 
-about=This plugin allows to perform attribute based clustering on vector layers, with functions for feature selection and evaluation
+about=This plugin allows to perform attribute based clustering (Agglomerative Hierarchical and K-Means) on vector layers,
+ with functions for feature selection and clustering evaluation. The plugin requires the libraries scikit_learn, numpy, and pandas 
+(see the repository for installation guide and other documentaion)
 
-tracker=http://bugs
-repository=http://repo
+tracker=https://github.com/folini96/Cluster-Analysis-plugin/issues
+repository=https://github.com/folini96/Cluster-Analysis-plugin
 # End of mandatory metadata
 
 # Recommended items:
@@ -23,10 +25,9 @@ hasProcessingProvider=no
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=python
+tags=vector,python,clustering,kmeans,feature selection
 
-homepage=http://homepage
-category=Plugins
+homepage=https://github.com/folini96/Cluster-Analysis-plugin
 icon=icon.png
 # experimental flag
 experimental=True
