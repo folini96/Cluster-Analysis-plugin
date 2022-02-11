@@ -160,7 +160,7 @@ class ClusteringMain:
             self.iface.addToolBarIcon(action)
 
         if add_to_menu:
-            self.iface.addPluginToMenu(
+            self.iface.addPluginToVectorMenu(
                 self.menu,
                 action)
 
