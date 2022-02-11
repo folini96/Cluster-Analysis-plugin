@@ -29,7 +29,7 @@ from PyQt5 import QtGui
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
-from .QgisProject_dialog import ClusteringMainDialog
+from .cluster_analysis_dialog import ClusteringMainDialog
 import os.path
 import numpy as np
 import pandas as pd

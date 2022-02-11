@@ -32,5 +32,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .QgisProject import ClusteringMain
+    from .cluster_analysis import ClusteringMain
     return ClusteringMain(iface)

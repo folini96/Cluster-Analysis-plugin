@@ -44,7 +44,7 @@ from qgis.core import QgsMapLayerProxyModel, QgsFieldProxyModel
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'QgisProject_dialog_base.ui'))
+    os.path.dirname(__file__), 'cluster_analysis_dialog_base.ui'))
 
 
 class ClusteringMainDialog(QtWidgets.QDialog, FORM_CLASS):
