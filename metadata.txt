@@ -10,9 +10,7 @@ version=1.0
 author=Andrea Folini
 email=andreafolini96@gmail.com
 
-about=This plugin allows to perform attribute based clustering (Agglomerative Hierarchical and K-Means) on vector layers,
- with functions for feature selection and clustering evaluation. The plugin requires the libraries scikit_learn, numpy, and pandas 
-(see the repository for installation guide and other documentaion)
+about=This plugin allows to perform attribute based clustering (Agglomerative Hierarchical and K-Means) on vector layers, with functions for feature selection and clustering evaluation. The plugin requires the libraries scikit_learn, numpy, and pandas (see the repository for installation guide and other documentaion)
 
 tracker=https://github.com/folini96/Cluster-Analysis-plugin/issues
 repository=https://github.com/folini96/Cluster-Analysis-plugin
@@ -40,8 +38,8 @@ deprecated=False
 # Check the documentation for more information.
 # plugin_dependencies=
 
-Category of the plugin: Raster, Vector, Database or Web
-# category=Vector
+# Category of the plugin: Raster, Vector, Database or Web
+category=Vector
 
 # If the plugin can run on QGIS Server.
 server=False
