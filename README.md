@@ -58,4 +58,6 @@ the sample size is, while the execution takes longer as this number grows;
 – *graph max cluster*: the max number of clusters used when plotting WSS and BSS trends. Requires a positive integer;
 - *distance*: distance measure used in hierarchical clustering, the accepted values are ‘euclidean’ or ‘manhattan’
 
-
+## Contacts
+Andrea Folini: andreafolini96@gmail.com | 
+andrea1.folini@mail.polimi.it
