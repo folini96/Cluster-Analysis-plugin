@@ -60,4 +60,4 @@ the sample size is, while the execution takes longer as this number grows;
 
 ## Contacts
 Andrea Folini: andreafolini96@gmail.com | 
-andrea1.folini@mail.polimi.it
+andrea.folini@polimi.it
