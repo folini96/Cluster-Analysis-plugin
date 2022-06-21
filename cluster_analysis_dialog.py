@@ -618,16 +618,6 @@ class ClusteringMainDialog(QtWidgets.QDialog, FORM_CLASS):
                             comp_matrix[j][i] += 1
         return comp_matrix
 
-    """FUNCTION TO TEST DATA
-    def run_selection(self):
-        data = self.create_table("selection")
-        scaler = MinMaxScaler()
-        normdata = pd.DataFrame(data=scaler.fit_transform(X=data), columns=data.columns)
-        var = normdata.var()
-        test = normdata["YR13TAMaMe"]
-        self.selGuide.clear()
-        self.selGuide.appendPlainText(var.to_string())
-    """
     # Main function for the feature selection window
     def run_selection(self):
         # Check that every field is filled out correctly. If not output an error message and exit the function
