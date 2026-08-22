@@ -5,7 +5,11 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $PluginName = "cluster_analysis"
-$StageRoot = Join-Path $env:TEMP $PluginName
+# Must match the folder name registered for this plugin on plugins.qgis.org
+# (set by the original submission's zip). Changing it would break the
+# plugin's identity in the repository, so keep it in sync with that name
+# rather than $PluginName.
+$PackageFolderName = "Cluster-Analysis-plugin-main"
 $OutputZip = Join-Path $RepoRoot "$PluginName.zip"
 
 # Runtime files only - excludes tests, Makefile/pb_tool.cfg, plugin_upload.py, dev/build
@@ -18,23 +22,32 @@ $Files = @(
     "resources.py",
     "Configuration.json",
     "metadata.txt",
-    "icon.png"
+    "icon.png",
+    "LICENSE"
 )
 
-if (Test-Path $StageRoot) { Remove-Item $StageRoot -Recurse -Force }
-New-Item -ItemType Directory -Path $StageRoot | Out-Null
-
-foreach ($f in $Files) {
-    $src = Join-Path $RepoRoot $f
-    if (-not (Test-Path $src)) {
-        throw "Required file missing: $f"
-    }
-    Copy-Item $src -Destination $StageRoot
-}
-
 if (Test-Path $OutputZip) { Remove-Item $OutputZip -Force }
-Compress-Archive -Path $StageRoot -DestinationPath $OutputZip
 
-Remove-Item $StageRoot -Recurse -Force
+# Compress-Archive on Windows PowerShell writes backslash path separators for
+# some entries, which violates the ZIP spec and QGIS's Python zipfile-based
+# loader rejects it. Build the archive manually so entry names always use
+# forward slashes.
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+$zip = [System.IO.Compression.ZipFile]::Open($OutputZip, [System.IO.Compression.ZipArchiveMode]::Create)
+try {
+    foreach ($f in $Files) {
+        $src = Join-Path $RepoRoot $f
+        if (-not (Test-Path $src)) {
+            throw "Required file missing: $f"
+        }
+        $entryName = "$PackageFolderName/$f"
+        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $src, $entryName, [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
+    }
+}
+finally {
+    $zip.Dispose()
+}
 
 Write-Host "Created $OutputZip"
