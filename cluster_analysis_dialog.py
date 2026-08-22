@@ -27,8 +27,7 @@ from qgis.PyQt import QtGui, uic, QtCore
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.core import QgsField, QgsVectorLayer, QgsProject, QgsVectorLayerExporter
-from PyQt5.QtWidgets import QFileDialog
-from PyQt5 import QtGui
+from qgis.PyQt.QtWidgets import QFileDialog
 import numpy as np
 import pandas as pd
 import json
@@ -301,11 +300,20 @@ class ClusteringMainDialog(QtWidgets.QDialog, FORM_CLASS):
         current_experiment = self.experiments[current_exp_index]
         self.select_compatible_experiments(current_experiment)
 
+    # Build an AgglomerativeClustering instance, compatible with both old (affinity=) and new (metric=)
+    # scikit-learn versions
+    def make_agglomerative(self, n_clusters):
+        try:
+            return AgglomerativeClustering(n_clusters=n_clusters, metric=self.configuration.get_distance(),
+                                            linkage='complete')
+        except TypeError:
+            return AgglomerativeClustering(n_clusters=n_clusters, affinity=self.configuration.get_distance(),
+                                            linkage='complete')
+
     # Return cluster labels for the specified dataset, algorithm for clustering and selected number of clusters
     def calc_clusters(self, dataset, clust_algo, num_cluster):
         if clust_algo == "Hierarchical":
-            clustering = AgglomerativeClustering(n_clusters=num_cluster, affinity=self.configuration.get_distance(),
-                                                 linkage='complete')
+            clustering = self.make_agglomerative(num_cluster)
         elif clust_algo == "K-Means":
             clustering = KMeans(n_clusters=num_cluster)
         return clustering.fit_predict(dataset)
@@ -541,8 +549,7 @@ class ClusteringMainDialog(QtWidgets.QDialog, FORM_CLASS):
 
         for k in k_values:
             if cluster_method == "Hierarchical":
-                clustering = AgglomerativeClustering(n_clusters=k, affinity=self.configuration.get_distance(),
-                                                     linkage='complete')
+                clustering = self.make_agglomerative(k)
             elif cluster_method == "K-Means":
                 clustering = KMeans(n_clusters=k)
 
@@ -650,6 +657,7 @@ class ClusteringMainDialog(QtWidgets.QDialog, FORM_CLASS):
             except ValueError:
                 self.selMessageBox.setStyleSheet("QLabel {  color : red; }")
                 self.selMessageBox.setText('There are no features that fulfill the requirements')
+                return
         if self.quasiCheck.isChecked():
             freq_threshold = self.configuration.get_frequency_cut()
             unique_values_threshold = self.configuration.get_unique_cut()
@@ -713,6 +721,9 @@ class ClusteringMainDialog(QtWidgets.QDialog, FORM_CLASS):
         drop_columns = []
         for c in data.columns:
             freq_rank = data[c].value_counts()
+            if freq_rank.shape[0] < 2:
+                drop_columns.append(c)
+                continue
             freq_ratio = freq_rank.iloc[0]/freq_rank.iloc[1]
             unique_number = data[c].nunique()
             unique_ratio = unique_number/data.shape[0]
@@ -749,7 +760,7 @@ class ClusteringMainDialog(QtWidgets.QDialog, FORM_CLASS):
             for j in range(i+1, corr_matrix.shape[0]):
                 if not bool_features[j]:
                     continue
-                if corr_matrix.iloc[i][j] >= corr_threshold:
+                if corr_matrix.iloc[i, j] >= corr_threshold:
                     if feature_values[best_feat] >= feature_values[j]:
                         bad_features.append(j)
                     else:
@@ -796,11 +807,11 @@ class ClusteringMainDialog(QtWidgets.QDialog, FORM_CLASS):
         base_entropy = self.calc_base_entropy(data)
         ranked_features = ranked_features - base_entropy
         selected_features = ranked_features[(ranked_features.Entropy > 0)]
-        selected_features.sort_values('Entropy')
+        selected_features = selected_features.sort_values('Entropy')
         return selected_features.index.values.tolist()
 
     def calc_sampling_entropy_features(self, data):
-        total_rank = pd.DataFrame(0, index=data.columns, columns=['Entropy'])
+        total_rank = pd.DataFrame(0.0, index=data.columns, columns=['Entropy'])
         base_entropy = 0.0
         iterations = self.configuration.get_entropy_iterations()
         n_samples = self.configuration.get_sample_size()
@@ -812,7 +823,7 @@ class ClusteringMainDialog(QtWidgets.QDialog, FORM_CLASS):
             base_entropy = base_entropy + partial_base
         ranked_features = total_rank - base_entropy
         selected_features = ranked_features[(ranked_features.Entropy > 0)]
-        selected_features.sort_values(['Entropy'])
+        selected_features = selected_features.sort_values(['Entropy'])
         return selected_features.index.values.tolist()
 
     def calc_base_entropy(self, data):
@@ -822,7 +833,7 @@ class ClusteringMainDialog(QtWidgets.QDialog, FORM_CLASS):
         return base_entropy
 
     def entropy_ranking(self, data):
-        rank = pd.DataFrame(0, index=data.columns, columns=['Entropy'])
+        rank = pd.DataFrame(0.0, index=data.columns, columns=['Entropy'])
         for c in data.columns:
             temp_data = data.drop(c, axis=1)
             dist = self.calc_distance(temp_data)
